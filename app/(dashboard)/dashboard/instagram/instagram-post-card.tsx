@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import Image from "next/image";
 import { Check, Copy, Send, ImageIcon, Loader2 } from "lucide-react";
 import { useQuery } from "convex/react";
 import confetti from "canvas-confetti";
@@ -103,10 +104,11 @@ export function InstagramPostCard({
       <Card className="group hover:shadow-md transition-shadow overflow-hidden">
         {imageUrl && (
           <div className="relative aspect-square max-h-80 overflow-hidden bg-muted">
-            <img
+            <Image
               src={imageUrl}
               alt="Generated post image"
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
         )}
