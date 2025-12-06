@@ -7,4 +7,5 @@ export {
   VoiceRecorderButton,
   VoiceRecorderButtonCompact,
 } from "./voice-recorder-button";
+export { ConversationalAgent } from "./conversational-agent";
 

@@ -40,6 +40,20 @@ export function useVoiceRecorder(
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const maxTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Use a ref to track if recording was cancelled - this avoids stale closure issues
+  const isCancelledRef = useRef<boolean>(false);
+  // Store callbacks in refs to avoid stale closures
+  const onRecordingCompleteRef = useRef(onRecordingComplete);
+  const onErrorRef = useRef(onError);
+
+  // Keep refs up to date
+  useEffect(() => {
+    onRecordingCompleteRef.current = onRecordingComplete;
+  }, [onRecordingComplete]);
+
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
   const cleanup = useCallback(() => {
     if (timerRef.current) {
@@ -61,6 +75,7 @@ export function useVoiceRecorder(
   const startRecording = useCallback(async () => {
     setError(null);
     setState("requesting");
+    isCancelledRef.current = false;
 
     try {
       // Request microphone access
@@ -95,8 +110,12 @@ export function useVoiceRecorder(
         const finalDuration = Date.now() - startTimeRef.current;
         const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
 
-        if (audioBlob.size > 0 && state !== "idle") {
-          onRecordingComplete?.(audioBlob, finalDuration);
+        // Use the ref to check cancellation state - avoids stale closure
+        if (audioBlob.size > 0 && !isCancelledRef.current) {
+          console.log("Recording complete, calling onRecordingComplete with blob size:", audioBlob.size);
+          onRecordingCompleteRef.current?.(audioBlob, finalDuration);
+        } else {
+          console.log("Recording skipped - cancelled:", isCancelledRef.current, "blob size:", audioBlob.size);
         }
 
         cleanup();
@@ -107,7 +126,7 @@ export function useVoiceRecorder(
       mediaRecorder.onerror = () => {
         const err = new Error("Recording failed");
         setError(err);
-        onError?.(err);
+        onErrorRef.current?.(err);
         cleanup();
         setState("idle");
       };
@@ -116,6 +135,7 @@ export function useVoiceRecorder(
       mediaRecorder.start(100); // Collect data every 100ms
       startTimeRef.current = Date.now();
       setState("recording");
+      console.log("Recording started with mimeType:", mimeType);
 
       // Update duration every 100ms
       timerRef.current = setInterval(() => {
@@ -132,11 +152,11 @@ export function useVoiceRecorder(
       const error =
         err instanceof Error ? err : new Error("Failed to access microphone");
       setError(error);
-      onError?.(error);
+      onErrorRef.current?.(error);
       cleanup();
       setState("idle");
     }
-  }, [maxDurationMs, onRecordingComplete, onError, cleanup, state]);
+  }, [maxDurationMs, cleanup]);
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current?.state === "recording") {
@@ -146,9 +166,11 @@ export function useVoiceRecorder(
   }, []);
 
   const cancelRecording = useCallback(() => {
+    // Set cancelled flag BEFORE stopping - this ensures the onstop handler knows it was cancelled
+    isCancelledRef.current = true;
+    console.log("Recording cancelled");
+    
     if (mediaRecorderRef.current) {
-      // Clear the onstop handler to prevent callback
-      mediaRecorderRef.current.onstop = null;
       if (mediaRecorderRef.current.state === "recording") {
         mediaRecorderRef.current.stop();
       }

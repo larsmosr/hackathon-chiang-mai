@@ -10,12 +10,17 @@ import { MessageInput } from "./message-input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Sparkles, Zap, PenTool, Share2 } from "lucide-react";
 
-export function BrainstormRoom() {
+interface BrainstormRoomProps {
+  initialTranscript?: string | null;
+}
+
+export function BrainstormRoom({ initialTranscript }: BrainstormRoomProps = {}) {
   const [sessionId, setSessionId] = useState<Id<"brainstormSessions"> | null>(
     null
   );
   const [selectedAgents, setSelectedAgents] = useState<AgentId[] | null>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [hasUsedInitialTranscript, setHasUsedInitialTranscript] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Queries
@@ -43,6 +48,16 @@ export function BrainstormRoom() {
       createSession({}).then((id) => setSessionId(id));
     }
   }, [currentSession, createSession]);
+
+  // Auto-send initial transcript from conversational AI
+  useEffect(() => {
+    if (initialTranscript && sessionId && !hasUsedInitialTranscript) {
+      setHasUsedInitialTranscript(true);
+      // Auto-send the conversation transcript to generate posts
+      const message = `Based on this brainstorming conversation, please generate social media posts:\n\n${initialTranscript}`;
+      handleSendMessage(message);
+    }
+  }, [initialTranscript, sessionId, hasUsedInitialTranscript]);
 
   // Scroll to bottom when messages change
   useEffect(() => {

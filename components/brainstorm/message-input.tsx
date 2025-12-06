@@ -41,10 +41,14 @@ export function MessageInput({
 
   const handleRecordingComplete = useCallback(
     async (audioBlob: Blob) => {
+      console.log("handleRecordingComplete called with blob:", audioBlob.size, audioBlob.type);
       // Pass audio to parent for transcription
       setIsSending(true);
       try {
         await onSendMessage("", audioBlob);
+        console.log("onSendMessage completed successfully");
+      } catch (error) {
+        console.error("onSendMessage error:", error);
       } finally {
         setIsSending(false);
       }
@@ -99,7 +103,8 @@ export function MessageInput({
   const isProcessing =
     recordingState === "processing" ||
     recordingState === "requesting" ||
-    isTranscribing;
+    isTranscribing ||
+    isSending; // Include isSending to show loading state while processing voice
   const canSend = message.trim() && !disabled && !isSending && !isRecording;
 
   return (
@@ -149,7 +154,7 @@ export function MessageInput({
             <div className="flex items-center gap-3 px-2 h-[24px] animate-in fade-in slide-in-from-bottom-2">
               <Loader2 className="w-4 h-4 animate-spin text-primary" />
               <span className="text-sm text-muted-foreground">
-                {isTranscribing ? "Transcribing your thoughts..." : "Processing audio..."}
+                {isTranscribing ? "Transcribing your thoughts..." : isSending ? "Sending to agents..." : "Processing audio..."}
               </span>
             </div>
           ) : (
