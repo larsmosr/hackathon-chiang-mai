@@ -33,6 +33,7 @@ export default defineSchema({
     platform: platformValidator,
     content: v.string(),
     timestamp: v.string(),
+    imageId: v.optional(v.id("_storage")),
   }).index("by_platform", ["platform"]),
 
   // Brainstorm sessions - each session is like a conversation
