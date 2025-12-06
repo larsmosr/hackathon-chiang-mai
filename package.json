@@ -9,6 +9,8 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@auth/core": "^0.34.3",
+		"@convex-dev/auth": "^0.0.90",
 		"@hookform/resolvers": "^5.1.1",
 		"@radix-ui/react-avatar": "^1.1.10",
 		"@radix-ui/react-dialog": "^1.1.14",
@@ -22,6 +24,7 @@
 		"@radix-ui/react-tabs": "^1.1.12",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"convex": "^1.30.0",
 		"input-otp": "^1.4.2",
 		"lucide-react": "^0.522.0",
 		"next": "15.3.4",
