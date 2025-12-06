@@ -4,11 +4,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
-import { agentIds, agents, type AgentId } from "@/lib/agents/config";
+import { type AgentId } from "@/lib/agents/config";
 import { ChatMessage } from "./chat-message";
 import { MessageInput } from "./message-input";
-import { AgentAvatar } from "./agent-avatar";
 import { Button } from "@/components/ui/button";
 import { Trash2, Sparkles, Zap, PenTool, Share2 } from "lucide-react";
 
@@ -196,7 +194,7 @@ export function BrainstormRoom() {
                   What are you working on?
                 </h1>
                 <p className="text-lg text-muted-foreground">
-                  Voice dump your thoughts. We'll turn them into content.
+                  Voice dump your thoughts. We&apos;ll turn them into content.
                 </p>
               </div>
 

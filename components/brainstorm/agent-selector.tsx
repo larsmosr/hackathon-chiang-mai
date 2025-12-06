@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { agents, agentIds, type AgentId } from "@/lib/agents/config";
-import { AgentAvatar } from "./agent-avatar";
 import { Button } from "@/components/ui/button";
 
 interface AgentSelectorProps {

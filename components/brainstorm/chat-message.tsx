@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { agents, type AgentId } from "@/lib/agents/config";
 import { AgentAvatar, UserAvatar } from "./agent-avatar";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, RefreshCw } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { useState } from "react";
 
 type MessageRole = "user" | AgentId;

@@ -131,8 +131,8 @@ const Index = () => {
                 ))}
               </div>
               <p className="text-gray-500 text-sm mt-4 font-mono">
-                "Just shipped the new onboarding flow. Users can now sign up in
-                under 30 seconds..."
+                &quot;Just shipped the new onboarding flow. Users can now sign up in
+                under 30 seconds...&quot;
               </p>
             </div>
           </div>
@@ -153,7 +153,7 @@ const Index = () => {
               </h2>
               <p className="text-gray-400 text-lg leading-relaxed mb-6">
                 As an indie maker, you know building in public works. But
-                crafting posts for X, LinkedIn, Instagram, and Bluesky? That's
+                crafting posts for X, LinkedIn, Instagram, and Bluesky? That&apos;s
                 hours you could spend shipping features.
               </p>
               <p className="text-gray-400 text-lg leading-relaxed">

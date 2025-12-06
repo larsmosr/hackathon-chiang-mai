@@ -40,7 +40,7 @@ export function MessageInput({
   }, [autoFocus]);
 
   const handleRecordingComplete = useCallback(
-    async (audioBlob: Blob, durationMs: number) => {
+    async (audioBlob: Blob) => {
       // Pass audio to parent for transcription
       setIsSending(true);
       try {
