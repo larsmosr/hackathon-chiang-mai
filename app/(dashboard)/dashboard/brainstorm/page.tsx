@@ -10,10 +10,16 @@ type BrainstormMode = "conversation" | "text";
 
 export default function BrainstormPage() {
   const [mode, setMode] = useState<BrainstormMode>("conversation");
-  const [conversationTranscript, setConversationTranscript] = useState<string | null>(null);
+  const [conversationTranscript, setConversationTranscript] = useState<
+    string | null
+  >(null);
 
   // Get Convex site URL for HTTP endpoints
-  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL?.replace(".convex.cloud", ".convex.site") || "";
+  const convexUrl =
+    process.env.NEXT_PUBLIC_CONVEX_URL?.replace(
+      ".convex.cloud",
+      ".convex.site"
+    ) || "";
 
   const handleConversationEnd = useCallback((transcript: string) => {
     console.log("Conversation ended with transcript:", transcript);
@@ -23,9 +29,9 @@ export default function BrainstormPage() {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-[calc(100vh-8rem)] overflow-hidden bg-gradient-to-b from-background to-muted/20 flex justify-center items-center">
       {/* Mode Toggle */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-full p-1 border shadow-sm">
+      <div className="absolute top-20 right-4 z-20 flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-full p-1 border shadow-sm">
         <Button
           variant={mode === "conversation" ? "default" : "ghost"}
           size="sm"
