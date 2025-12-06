@@ -1,6 +1,7 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { platformValidator } from "./schema";
+import { internal } from "./_generated/api";
 
 export const listByPlatform = query({
   args: { platform: platformValidator },
@@ -11,6 +12,7 @@ export const listByPlatform = query({
       platform: platformValidator,
       content: v.string(),
       timestamp: v.string(),
+      imageId: v.optional(v.id("_storage")),
     })
   ),
   handler: async (ctx, args) => {
@@ -19,6 +21,45 @@ export const listByPlatform = query({
       .withIndex("by_platform", (q) => q.eq("platform", args.platform))
       .order("desc")
       .collect();
+  },
+});
+
+export const getImageUrl = query({
+  args: { imageId: v.id("_storage") },
+  returns: v.union(v.string(), v.null()),
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.imageId);
+  },
+});
+
+export const updatePostImage = internalMutation({
+  args: {
+    postId: v.id("posts"),
+    imageId: v.id("_storage"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.postId, { imageId: args.imageId });
+    return null;
+  },
+});
+
+export const generatePostImage = mutation({
+  args: { postId: v.id("posts") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const post = await ctx.db.get(args.postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+    if (post.imageId) {
+      return null;
+    }
+    await ctx.scheduler.runAfter(0, internal.images.generateImage, {
+      postId: args.postId,
+      content: post.content,
+    });
+    return null;
   },
 });
 

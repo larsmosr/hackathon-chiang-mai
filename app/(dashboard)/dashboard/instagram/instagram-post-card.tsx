@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Check, Copy, Send } from "lucide-react";
+import { Check, Copy, Send, ImageIcon, Loader2 } from "lucide-react";
+import { useQuery } from "convex/react";
 import confetti from "canvas-confetti";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,9 +17,12 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-interface PostCardProps {
+interface InstagramPostCardProps {
+  postId: Id<"posts">;
   content: string;
   timestamp?: string;
+  imageId?: Id<"_storage">;
+  onGenerateImage: (postId: string) => Promise<void>;
 }
 
 function triggerConfetti() {
@@ -29,14 +35,14 @@ function triggerConfetti() {
       angle: 60,
       spread: 55,
       origin: { x: 0, y: 0.7 },
-      colors: ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444"],
+      colors: ["#E1306C", "#F77737", "#FCAF45", "#833AB4", "#C13584"],
     });
     confetti({
       particleCount: 3,
       angle: 120,
       spread: 55,
       origin: { x: 1, y: 0.7 },
-      colors: ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444"],
+      colors: ["#E1306C", "#F77737", "#FCAF45", "#833AB4", "#C13584"],
     });
 
     if (Date.now() < end) {
@@ -47,9 +53,21 @@ function triggerConfetti() {
   frame();
 }
 
-export function PostCard({ content, timestamp }: PostCardProps) {
+export function InstagramPostCard({
+  postId,
+  content,
+  timestamp,
+  imageId,
+  onGenerateImage,
+}: InstagramPostCardProps) {
   const [copied, setCopied] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const imageUrl = useQuery(
+    api.posts.getImageUrl,
+    imageId ? { imageId } : "skip"
+  );
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(content);
@@ -62,6 +80,18 @@ export function PostCard({ content, timestamp }: PostCardProps) {
     setShowCelebration(true);
   }, []);
 
+  const handleGenerateImage = async () => {
+    setIsGenerating(true);
+    try {
+      await onGenerateImage(postId);
+      toast.success("Image generation started! It may take a few seconds.");
+    } catch {
+      toast.error("Failed to generate image. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   useEffect(() => {
     if (showCelebration) {
       triggerConfetti();
@@ -70,7 +100,16 @@ export function PostCard({ content, timestamp }: PostCardProps) {
 
   return (
     <>
-      <Card className="group hover:shadow-md transition-shadow">
+      <Card className="group hover:shadow-md transition-shadow overflow-hidden">
+        {imageUrl && (
+          <div className="relative aspect-square max-h-80 overflow-hidden bg-muted">
+            <img
+              src={imageUrl}
+              alt="Generated post image"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
         <CardContent className="p-4">
           <div className="flex justify-between items-start gap-4">
             <div className="flex-1 space-y-2">
@@ -80,6 +119,22 @@ export function PostCard({ content, timestamp }: PostCardProps) {
               )}
             </div>
             <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+              {!imageId && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleGenerateImage}
+                  disabled={isGenerating}
+                  title="Generate AI image"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ImageIcon className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -111,7 +166,8 @@ export function PostCard({ content, timestamp }: PostCardProps) {
             <div className="text-6xl mb-4">🎉</div>
             <DialogTitle className="text-2xl">Congratulations!</DialogTitle>
             <DialogDescription className="text-base mt-2">
-              Your post is ready to go live! You&apos;re one step closer to sharing your journey with the world.
+              Your Instagram post is ready to go live! Share your journey with
+              the world.
             </DialogDescription>
           </DialogHeader>
           <Button

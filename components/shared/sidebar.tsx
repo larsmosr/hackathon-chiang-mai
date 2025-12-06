@@ -5,8 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
-  Settings,
-  BarChart3,
+  Brain,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -55,14 +54,8 @@ const sidebarGroups = [
       {
         title: "Brainstorm Room",
         href: "/dashboard/brainstorm",
-        icon: BarChart3,
+        icon: Brain,
         badge: "New",
-      },
-      {
-        title: "Settings",
-        href: "/dashboard/settings",
-        icon: Settings,
-        badge: null,
       },
     ],
   },
