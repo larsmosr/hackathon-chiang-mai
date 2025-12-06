@@ -29,7 +29,7 @@ if (typeof window === "undefined") {
 			writable: true,
 			configurable: true,
 		});
-	} catch (e) {
+	} catch {
 		// Fallback to direct assignment if Object.defineProperty fails (unlikely in Node)
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).localStorage = localStorageMock;
