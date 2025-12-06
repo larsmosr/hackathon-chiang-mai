@@ -1,0 +1,206 @@
+---
+alwaysApply: true
+---
+# Project Rules: Indie Maker Voice-to-Content App
+
+You are an expert full stack TypeScript developer working in this codebase.
+
+This project is a web app for indie makers to:
+- Voice dump their current work, ideas and journey
+- Store and structure these inputs as context
+- Generate authentic, platform specific social posts (X, LinkedIn, Instagram, Bluesky, etc.)
+- Reflect the user's own tone and vocabulary
+
+Always optimize for: real-world usefulness, low friction, simple UX, and production ready quality.
+
+---
+
+## Tech Stack
+
+- Frontend: Next.js (App Router), React, TypeScript, Tailwind CSS
+- Backend: Convex for database and server functions
+- AI: OpenAI (ChatGPT style agents, sub agents per platform)
+- Speech: ElevenLabs for speech to text (and optional text to speech)
+- Tooling: ESLint, Prettier, strict TypeScript
+
+Follow idioms and best practices of these tools.
+
+---
+
+## Code Style
+
+- Use TypeScript everywhere
+- Prefer functional, declarative React components
+- Avoid classes
+- Prefer small, focused functions and components
+- Eliminate duplication using helpers and composition
+- Use descriptive names: `isLoading`, `hasError`, `createVoiceEntry`, `generateTwitterPost`
+- Export a single main component per file plus clearly separated helpers
+
+Use this file order where it makes sense:
+1. Imports
+2. Types and interfaces
+3. Constants
+4. Pure helper functions
+5. React hooks
+6. React components
+7. Exports
+
+---
+
+## Naming Conventions
+
+- Directories: `kebab-case`
+- Files: `kebab-case.ts` or `kebab-case.tsx`
+- Components: `PascalCase`
+- Hooks: `useSomething`
+- Variables and functions: `camelCase`
+- Convex functions: verbs that describe the action, e.g. `createVoiceEntry`, `listPostsByUser`
+- AI functions: make the intent explicit, e.g. `buildStyleProfile`, `generatePlatformPosts`
+
+---
+
+## UI and Styling
+
+- Mobile first, responsive layout
+- Use semantic HTML and accessible markup
+- Use Tailwind for styling
+- Keep UI minimal, focused and fast:
+  - Big record button
+  - Clear list of recent entries
+  - Obvious social post suggestions
+- Add simple controls:
+  - Platform tabs (X, LinkedIn, Instagram, Bluesky)
+  - Tone presets: "short", "detailed", "more casual", "more professional"
+
+Avoid heavy UI libraries unless strictly needed.
+
+---
+
+## Core Product Behavior
+
+Always design features around these principles:
+
+- Voice first:
+  - The fastest way to add content is to speak
+  - Recording and transcription must feel instant and reliable
+- Authentic tone:
+  - Posts must sound like the user, not like a generic AI
+  - Learn user specific vocabulary and patterns over time
+- Context aware:
+  - Use past entries to keep continuity and avoid repetition
+  - Track project, feature, status (idea, in progress, shipped)
+- Low friction:
+  - 1 to 3 clicks from voice dump to copyable social post
+  - No complex configuration in the MVP
+
+---
+
+## Data Model and Convex
+
+Model data to support context and authenticity, for example:
+
+- `users`
+  - id, handle, name, profile, main platforms
+- `voiceEntries`
+  - id, userId, rawTranscript, createdAt, tags, projectId, status
+- `styleProfiles`
+  - id, userId, inferred tone traits and common phrases
+- `generatedPosts`
+  - id, userId, voiceEntryId, platform, content, createdAt, variant
+
+Rules for Convex code:
+
+- Validate input in Convex functions
+- Keep Convex functions small and focused
+- Put domain logic into helpers rather than directly in handlers
+- Never trust client input, especially for user ids and ownership
+
+---
+
+## AI Integration Rules
+
+Treat AI usage as deterministic and controlled.
+
+- Never invent features or progress that the user did not mention
+- Ground every generated post in:
+  - The selected voice entry transcript
+  - Optional recent context from the same user
+  - The user's style profile
+- Sub agents per platform must respect clear constraints:
+  - X: short, punchy, hook plus optional thread idea
+  - LinkedIn: more context, value oriented, clear takeaway
+  - Instagram: more storytelling, casual, suitable for caption
+  - Bluesky: similar to X, slightly more technical friendly
+- Keep prompts structured:
+  - `system`: role and hard constraints
+  - `developer`: platform rules and safety
+  - `user`: transcript plus context plus user preferences
+
+Output format must always be machine friendly (JSON or clearly separated blocks).
+
+---
+
+## State, Data Fetching and Performance
+
+- Use React server components where possible
+- Use client components only when needed for interactivity (recording, editing, copying)
+- Use Convex queries and mutations for data access
+- Cache aggressively where safe, especially:
+  - User profile and style profile
+  - Lists of recent voice entries
+  - Previously generated posts
+- Avoid unnecessary global state; prefer props and hooks
+- Use loading and error states for all async UI paths
+
+---
+
+## Error Handling and Validation
+
+- Validate inputs on both client and server
+- Fail early in backend functions:
+  - Check auth and ownership first
+  - Check required fields and types
+  - Return clear, structured error objects
+- Frontend:
+  - Show simple, human friendly messages
+  - Never leak internal error details to the user
+- For AI calls:
+  - Handle timeouts and malformed responses
+  - Provide a clear fallback: "Generation failed, try again"
+
+---
+
+## Testing and Maintainability
+
+- Favor tests for:
+  - Core data shaping logic (transcript to context)
+  - AI prompt builders and response parsers
+  - Convex functions for access control and filtering
+- Keep business logic in pure functions so they are easy to test
+- Use strict TypeScript and fix type errors instead of silencing them
+
+---
+
+## Security and Privacy
+
+- Protect all user data with authentication and authorization
+- Treat voice data and transcripts as sensitive:
+  - Do not log raw voice or transcripts in server logs
+  - Do not expose internal ids in URLs without checks
+- Store API keys only in environment variables
+- Use HTTPS in all deployments
+
+---
+
+## UX Principles For Indie Makers
+
+When in doubt, follow these rules:
+
+- First run experience: user should record and see at least one good post within 30 seconds
+- Avoid configuration walls; let users see value before asking for details
+- Default to simple, opinionated choices, then allow power users to tweak
+- Always show the raw transcript and let the user understand where the post came from
+- Make it obvious how to copy posts and which platform they are meant for
+
+Design and code as if this is going to be a real, shipped SaaS that people will pay for, not a throwaway demo.
