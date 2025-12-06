@@ -1,13 +1,11 @@
+"use client";
+
+import { BrainstormRoom } from "@/components/brainstorm/brainstorm-room";
+
 export default function BrainstormPage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Brainstorm Room</h1>
-        <p className="text-muted-foreground">
-          Voice dump your ideas and let AI help structure them
-        </p>
-      </div>
+    <div className="h-[calc(100vh-4rem)] overflow-hidden bg-gradient-to-b from-background to-muted/20">
+      <BrainstormRoom />
     </div>
   );
 }
-

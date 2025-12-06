@@ -5,8 +5,7 @@ if (typeof window === "undefined") {
 	// Server-side: ensure localStorage is not broken
 	const storage: Record<string, string> = {};
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	(global as any).localStorage = {
+	const localStorageMock = {
 		getItem: (key: string) => storage[key] ?? null,
 		setItem: (key: string, value: string) => {
 			storage[key] = value;
@@ -22,7 +21,19 @@ if (typeof window === "undefined") {
 		},
 		key: (index: number) => Object.keys(storage)[index] ?? null,
 	};
+
+	// Force overwrite global localStorage if it exists or define it if it doesn't
+	try {
+		Object.defineProperty(global, "localStorage", {
+			value: localStorageMock,
+			writable: true,
+			configurable: true,
+		});
+	} catch (e) {
+		// Fallback to direct assignment if Object.defineProperty fails (unlikely in Node)
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(global as any).localStorage = localStorageMock;
+	}
 }
 
 export {};
-
