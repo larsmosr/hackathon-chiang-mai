@@ -8,6 +8,10 @@
  * @module
  */
 
+import type * as ai_generate from "../ai/generate.js";
+import type * as ai_transcribe from "../ai/transcribe.js";
+import type * as brainstorm from "../brainstorm.js";
+import type * as http from "../http.js";
 import type * as posts from "../posts.js";
 
 import type {
@@ -17,6 +21,10 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "ai/generate": typeof ai_generate;
+  "ai/transcribe": typeof ai_transcribe;
+  brainstorm: typeof brainstorm;
+  http: typeof http;
   posts: typeof posts;
 }>;
 
