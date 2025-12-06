@@ -5,6 +5,8 @@ import { useConversation } from "@elevenlabs/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Phone, PhoneOff, Sparkles, Loader2 } from "lucide-react";
+import { AgentPicker } from "./agent-picker";
+import { type AgentId } from "@/lib/agents/config";
 
 interface ConversationalAgentProps {
   onConversationEnd: (transcript: string) => void;
@@ -20,6 +22,7 @@ export function ConversationalAgent({
   const [status, setStatus] = useState<ConversationStatus>("idle");
   const [transcript, setTranscript] = useState<Array<{ role: "user" | "agent"; text: string }>>([]);
   const [isMuted, setIsMuted] = useState(false);
+  const [selectedAgents, setSelectedAgents] = useState<AgentId[] | null>(null);
 
   const conversation = useConversation({
     onConnect: () => {
@@ -155,16 +158,22 @@ export function ConversationalAgent({
       )}
 
       {/* Controls */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col items-center gap-4">
         {status === "idle" && (
-          <Button
-            onClick={startConversation}
-            size="lg"
-            className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
-          >
-            <Phone className="w-5 h-5" />
-            Start Brainstorming
-          </Button>
+          <>
+            <Button
+              onClick={startConversation}
+              size="lg"
+              className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
+            >
+              <Phone className="w-5 h-5" />
+              Start Brainstorming
+            </Button>
+            <AgentPicker
+              selectedAgents={selectedAgents}
+              onSelectionChange={setSelectedAgents}
+            />
+          </>
         )}
 
         {isConnecting && (
